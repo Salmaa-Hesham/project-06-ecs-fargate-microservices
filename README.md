@@ -36,67 +36,7 @@ This solution decomposes the application into containerized microservices:
 
 ![Containerized Microservices on ECS Fargate Architecture Diagram](architecture.png)
 
-<details>
-<summary>Click to view Mermaid diagram markup</summary>
 
-```mermaid
-flowchart TD
-    subgraph Clients ["Public Ingress Tier"]
-        Users["Web / API Clients"]
-        ALB["Application Load Balancer\n(Path-Based Listener Rules)"]
-    end
-
-    subgraph VPC ["Private VPC (10.0.0.0/16)"]
-        subgraph DiscoveryZone ["Private Service Discovery: microservices.local"]
-            CloudMap["AWS Cloud Map\nPrivate Route 53 DNS Namespace"]
-        end
-
-        subgraph ECSCluster ["Amazon ECS Fargate Cluster (prod-microservices-cluster)"]
-            subgraph AuthService ["Auth Service (/api/auth/*)"]
-                AuthTask1["Auth Task (Fargate)"]
-                AuthTask2["Auth Task (Fargate)"]
-            end
-
-            subgraph OrdersService ["Orders Service (/api/orders/*)"]
-                OrderTask1["Order Task (Fargate)"]
-                OrderTask2["Order Task (Fargate)"]
-            end
-
-            subgraph NotifService ["Notifications Service (Async / Event)"]
-                NotifTask1["Notification Worker (Fargate)"]
-            end
-        end
-
-        subgraph DataCache ["State & Secrets Tier"]
-            Redis[("Amazon ElastiCache Redis\n(Session Store & Token Blacklist)")]
-            Secrets["AWS Secrets Manager\n(DB Passwords & JWT Signing Keys)"]
-        end
-    end
-
-    subgraph CICD ["CI/CD Continuous Delivery"]
-        ECR["Amazon ECR\n(Private Image Scanning)"]
-        CodeDeploy["AWS CodeDeploy\n(Blue/Green Shift: Canary10Percent5Minutes)"]
-    end
-
-    %% Ingress Traffic
-    Users -->|HTTPS| ALB
-    ALB -->|Path: /api/auth*| AuthService
-    ALB -->|Path: /api/orders*| OrdersService
-
-    %% Service to Service
-    OrderTask1 & OrderTask2 -->|DNS: auth.microservices.local| CloudMap
-    CloudMap -.->|Resolves to Auth IP| AuthTask1
-    OrderTask1 -->|DNS: notif.microservices.local| NotifTask1
-
-    %% State & Security
-    AuthService & OrdersService -->|Port 6379| Redis
-    AuthService & OrdersService -.->|Inject Secret at Launch| Secrets
-    ECR -->|Pull Image Digest| ECSCluster
-    CodeDeploy -.->|Manage Traffic Shifting| ALB
-```
-</details>
-
-> **Note**: A vector format source file (`architecture.drawio`) is included in this directory. You can open and edit it in [draw.io](https://app.diagrams.net/) or [Lucidchart](https://lucid.app/).
 
 ---
 
