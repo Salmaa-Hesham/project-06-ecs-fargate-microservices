@@ -1,0 +1,98 @@
+<mxfile host="app.diagrams.net" modified="2026-09-26T20:00:00.000Z" agent="Mozilla/5.0" version="21.6.5" type="device">
+  <diagram id="aws-project-06" name="Containerized Microservices on ECS Fargate">
+    <mxGraphModel dx="1422" dy="880" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Ingress & Load Balancing Box -->
+        <mxCell id="box-alb" value="Ingress &amp; Public Traffic" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#F8FAFC;strokeColor=#64748B;verticalAlign=top;align=left;spacingLeft=15;spacingTop=10;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="60" y="40" width="1440" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="clients" value="Web &amp; Mobile Clients" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="90" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="alb" value="Application Load Balancer&#xa;Path-Based Routing:&#xa;/api/auth* -&gt; TG-Auth | /api/orders* -&gt; TG-Orders" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#16A34A;strokeColor=#14532D;fontColor=#FFFFFF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="380" y="80" width="460" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ecr" value="Amazon ECR Private Repositories&#xa;(Image Vulnerability Scanning on Push)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EA580C;strokeColor=#7C2D12;fontColor=#FFFFFF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="940" y="90" width="300" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- VPC Container -->
+        <mxCell id="box-vpc" value="VPC: prod-microservices-vpc (10.0.0.0/16)" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#EFF6FF;strokeColor=#2563EB;verticalAlign=top;align=left;spacingLeft=15;spacingTop=10;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="60" y="240" width="1440" height="680" as="geometry" />
+        </mxCell>
+
+        <!-- ECS Fargate Cluster Box -->
+        <mxCell id="box-ecs" value="Amazon ECS Fargate Cluster (Serverless Containers)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#3B82F6;verticalAlign=top;align=left;spacingLeft=15;spacingTop=10;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="100" y="290" width="860" height="600" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-auth" value="Auth Service (ECS Fargate)&#xa;Tasks: 2 Replicas&#xa;Port: 8080" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F59E0B;strokeColor=#B45309;fontColor=#FFFFFF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="130" y="350" width="360" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-orders" value="Orders Service (ECS Fargate)&#xa;Tasks: 2 Replicas&#xa;Port: 8081" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F59E0B;strokeColor=#B45309;fontColor=#FFFFFF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="130" y="500" width="360" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-notif" value="Notifications Service (ECS Fargate)&#xa;Async Event Worker&#xa;Port: 8082" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F59E0B;strokeColor=#B45309;fontColor=#FFFFFF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="130" y="650" width="360" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Cloud Map Discovery Box -->
+        <mxCell id="cloud-map" value="AWS Cloud Map: microservices.local&#xa;Private Route 53 Service Discovery&#xa;Resolves container IPs directly" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#6D28D9;strokeColor=#4C1D95;fontColor=#FFFFFF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="420" width="380" height="140" as="geometry" />
+        </mxCell>
+
+        <!-- Shared State & Data Box -->
+        <mxCell id="box-data" value="Shared State, Cache &amp; Secrets" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#F0FDF4;strokeColor=#16A34A;verticalAlign=top;align=left;spacingLeft=15;spacingTop=10;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="290" width="460" height="600" as="geometry" />
+        </mxCell>
+
+        <mxCell id="redis" value="Amazon ElastiCache for Redis&#xa;(Replication Group - Multi-AZ)&#xa;Shared Session Store &amp; Rate Limiter" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DC2626;strokeColor=#991B1B;fontColor=#FFFFFF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="350" width="380" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="secrets" value="AWS Secrets Manager&#xa;Injected into container env at launch&#xa;DB credentials &amp; JWT signing keys" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#059669;strokeColor=#064E3B;fontColor=#FFFFFF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="500" width="380" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="codedeploy" value="AWS CodeDeploy&#xa;Blue / Green Canary Shifting&#xa;(Canary10Percent5Minutes)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2563EB;strokeColor=#1D4ED8;fontColor=#FFFFFF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="650" width="380" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Connectors -->
+        <mxCell id="c1" edge="1" source="clients" target="alb" style="strokeWidth=2;strokeColor=#475569;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" edge="1" source="alb" target="svc-auth" style="strokeWidth=2;strokeColor=#16A34A;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" edge="1" source="alb" target="svc-orders" style="strokeWidth=2;strokeColor=#16A34A;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" edge="1" source="svc-orders" target="cloud-map" style="strokeWidth=2;strokeColor=#6D28D9;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" edge="1" source="cloud-map" target="svc-auth" style="strokeWidth=2;strokeColor=#6D28D9;dashed=1;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c6" edge="1" source="svc-orders" target="svc-notif" style="strokeWidth=2;strokeColor=#6D28D9;dashed=1;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c7" edge="1" source="svc-auth" target="redis" style="strokeWidth=2;strokeColor=#DC2626;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c8" edge="1" source="svc-orders" target="redis" style="strokeWidth=2;strokeColor=#DC2626;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c9" edge="1" source="secrets" target="svc-orders" style="strokeWidth=2;strokeColor=#059669;dashed=1;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
